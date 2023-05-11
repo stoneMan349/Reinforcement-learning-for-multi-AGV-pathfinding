@@ -72,7 +72,7 @@ Just run src.main.py to run this project.
 ### 2. Two ways to create a scene  
 <p align="center">
 <img src="./ReadMe_Assets/fig2_scene_construction.png" width="40%">
-<img src="./ReadMe_Assets/fig2_scene_construction2.png" width="39%"></p>
+<img src="./ReadMe_Assets/fig2_scene_construction2.PNG" width="39%"></p>
 
 *Notes:  
 The red block represents storage station, the gray block represents picking station, the white block represents track.  
