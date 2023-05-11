@@ -153,25 +153,34 @@ from algorithm.PG_structure.Controller import PGAgentController as modelControll
 ## Details of RL algorithm
 ### 1.State
 ### 2.Action
+Action space includes five actions: up, right, down, left and stop. Each action corresponds to a number.  
+You can look them up in src.utils.utils.py
+```python
+str_value = {"UP": 0, "RIGHT": 1, "DOWN": 2, "LEFT": 3, "STOP": 4}
+value_str = {0: "UP", 1: "RIGHT", 2: "DOWN", 3: "LEFT", 4: "STOP"}
+```
 ### 3.Reward
+3.1 Corresponding to the result of performing an action, the agent can get three types of rewards: positive reward (reward value +1), negative reward (reward value -1) and normal reward (reward value 0).  
+3.2 When the AGV reaches the destination, it gets a positive reward; when the AGV hits an obstacle or runs out of the scene, it gets a negative reward; in other cases, the AGV gets a normal reward.  
+[*Tips: This is a typical sparse reward problem. We use Reward Reshaping to improve training performance.*](#3.Reward Reshaping)
 ### 4.Convolutional Neural Network
 
+## Other Technics
 
-## Behavioral Cloning
+### 1.A* guiding DQN (AG-DQN)
+### 2.Behavioral Cloning
 
 
-## Sparse Reward
+### 3.Reward Reshaping
 
-
-## Limited Visual
+### 4.Limited Visual
 
 
 
 ## Other Tips
 ### Using our environment to test your algorithms
-### How to create a special layout
+
 ### How to import a serial of task
-### Each algorithm includes a simple example
 
 ### It is not sufficient in solving multi-AGV pathfinding in huge scene, it only works with small scenes and several AGVs
 
@@ -180,6 +189,6 @@ from algorithm.PG_structure.Controller import PGAgentController as modelControll
 
 
 ## Citation
-If you find our project helpful, please cite our paper:  
+If you find our project helpful, please cite our paper related to this project:  
 [1] Luo L, Zhao N, Zhu Y, et al. A* guiding DQN algorithm for automated guided vehicle pathfinding problem of robotic mobile fulfillment systems[J]. Computers & Industrial Engineering, 2023, 178: 109112.
 
