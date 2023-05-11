@@ -26,15 +26,16 @@
 <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat">
 </p>
 
-<img src="./ReadMe_Assets/fig1_Layout.jpg" width="100%">
+<p align="center">
+<img src="./ReadMe_Assets/fig1_title.png" width="80%"></p>
 
 
 ## Introduction
 
-**Example: Multi-AGV controlled by neural network**
+**Example: Multi-AGV in an robotic mobile fulfilment system**
 
 <p align="center">
-<img src="./ReadMe_Assets/fig2_AGV_controller_by_neural_network.gif" width="80%"></p>
+<img src="./ReadMe_Assets/video1-overview.gif" width="80%"></p>
 
 <img align="right" src="./ReadMe_Assets/fig5_project_structure.png" width="25%">
 
@@ -48,14 +49,13 @@
 
 3.The figure on the right shows the structure of this project.
 
-**This project was created by [LeiLuo](https://scholar.google.com/citations?user=auFJLXkAAAAJ) under the supervision of Professor Zhao Ning form University of Science and Technology of Beijing (Beijing, China)** .
+**This project was created by [LeiLuo](https://scholar.google.com/citations?user=auFJLXkAAAAJ) under the supervision of Professor [Zhao Ning](http://me.ustb.edu.cn/shiziduiwu/jiaoshixinxi/2022-03-24/434.html) form University of Science and Technology of Beijing (Beijing, China)** .
 
-## Robotic mobile and fulfilment (RMFS)
+## Robotic Mobile Fulfilment System (RMFS)
 <p align="center">
 <img src="./ReadMe_Assets/fig3_RMFS.gif" width="35%">
-<img src="./ReadMe_Assets/fig4_RMFS.gif" width="40%"></p>
 
-1. The first figure shows an RMFS made by [Quicktron Robots](https://www.quicktron.com/). The second figure shows a model of an RMFS
+1. The figure shows an RMFS made by [Quicktron Robots](https://www.quicktron.com/).
 2. **The components of an RMFS** include AGVs (for transferring shelves), shelves (for storing goods), a track (on which the AGVs can move), a picking station (where workers can pick goods), and a charge room (where the AGVs can recharge).
 4. **The goal of the RMFS** is to have AGVs transfer shelves to the picking station, where workers can correctly select, package, and deliver the goods.
 5. **The aim of the AGVs** is to transfer the necessary shelves to the picking station and return them to their original location once the workers have finished picking the goods.
@@ -67,22 +67,94 @@
 -Our method is not limited to the RMFS scenario but can also be applied in other pathfinding situations if they are created using a similar grip-based approach.*
 
 ## How to use
-**src.main.py is the Entry of the project**
-1. Create a simple Scene and control a single AGV using keyboard 
-2. Create a simple Scene and let the AGV be controlled by A* algorithm 
-3. Train a single AGV in a simple Scene using AG-DQN algorithm 
-4. Create a simple Scene and control a single AGV using a trained neural network 
+### 1. src.main.py is the Entry of the project  
+Just run src.main.py to run this project.  
+### 2. Two ways to create a scene  
+<p align="center">
+<img src="./ReadMe_Assets/fig2_scene_construction.png" width="40%">
+<img src="./ReadMe_Assets/fig2_scene_construction2.png" width="39%"></p>
 
-**Please note that other details will be discussed in the following sections**
+*Notes:  
+The red block represents storage station, the gray block represents picking station, the white block represents track.  
+The green block represents current target place, the pink block represents current target place's task has been finished.  
+The left figure represents construction method 2.1. The right figure represents construction method 2.2*
 
+**2.1 Create a rectangular layout by entering 5 parameters**  
+Adjust following parameters to create a rectangular layout
+```python
+ss_x_width, ss_y_width, ss_x_num, ss_y_num, ps_num = 4, 2, 2, 2, 2
+# ss_x_width: The number of storage stations in the x-axis direction of the storage station island
+# ss_y_width: The number of storage stations in the y-axis direction of the storage station island
+# ss_x_num: The number of storage station island in X-axis direction
+# ss_y_num: The number of storage station island in y-axis direction
+# ps_num: The number of picking station
+```
 
-## State, Action and Reward
-### State
-### Action
-### Reward
+**2.2 Create a special layout by entering 'layout_list'**  
+Enter a list to create a special layout
+```python
+    layout_list = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   [0, 1, 1, 1, 1, 1, 1, 0, 0],
+                   [0, 1, 1, 1, 1, 1, 1, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 1, 1, 0],
+                   [0, 0, 0, 2, 0, 0, 1, 1, 0],
+                   [0, 0, 0, 0, 0, 0, 1, 1, 0],
+                   [0, 1, 1, 1, 1, 1, 1, 0, 0],
+                   [0, 1, 1, 1, 1, 1, 1, 0, 0],
+                   [0, 0, 0, 0, 0, 0, 0, 0, 0]] 
+# 0: track,  1: storage station,  2: picking station.
+# Note: Any storage station needs to be connected to a road in at least one direction.
+```
+### 3. Five control modes of AGVs
+Select the control modes by changing parameter 'control_mode'
+```python
+    control_type = {0: "train_NN", 1: "use_NN", 2: "A_star", 3: "manual", 4: "Expert"}
+    control_mode = 3
+```
 
+**3.1 Manual mode**  
+Control AGV by keyboard. (In this mode, you can only control a single AGV)
+```python
+    control_mode = 3
+```
 
-## Convolutional Neural Network
+**3.2 A\* mode**  
+Control AGV by A* algorithm.
+```python
+    control_mode = 2
+```
+**3.3 Training mode**  
+Training a neural network to guide AGV. (RL algorithms will be discussed in next section)
+```python
+    control_mode = 0
+```
+
+**3.4 RL mode**  
+Control AGV by a well-trained neural network.
+```python
+    control_mode = 0
+```
+
+**3.5 Expert mode**  
+Collect expert experience by using A* algorithm to control AGV.
+```python
+    control_mode = 4
+```
+
+### 4. Three RL algorithms
+We provide three algorithms including PG, AC and DQN.  
+Import different packages to experience these algorithms, the control mode should choose to "Training mode"
+```python
+# from algorithm.AC_structure.Controller import ACAgentController as modelController
+from algorithm.PG_structure.Controller import PGAgentController as modelController
+# from src.algorithm.MADQN_structure.Controller import MADQNAgentController as modelController
+```
+
+## Details of RL algorithm
+### 1.State
+### 2.Action
+### 3.Reward
+### 4.Convolutional Neural Network
 
 
 ## Behavioral Cloning
@@ -111,76 +183,3 @@
 If you find our project helpful, please cite our paper:  
 [1] Luo L, Zhao N, Zhu Y, et al. A* guiding DQN algorithm for automated guided vehicle pathfinding problem of robotic mobile fulfillment systems[J]. Computers & Industrial Engineering, 2023, 178: 109112.
 
-
-
-
-### Drag and Drop [__Chrome,Opera__]:-
-
-- **Drag** the card or the card pile you want to move.
-- **Drop** the dragged card pile on the target and if the move is legal card will move
-- Note:- Drag and Drop doesn't work for properly for **firefox** due to their lack of support to html Drag and drop API - https://bugzilla.mozilla.org/show_bug.cgi?id=505521 .
-
-### Click edition [__Mobile,Firefox,Chrome,Safari,Opera__]-
-
-- **Click** on the card or card pile you want to move .The pile turns to **blue**.
-- **Click** on the
-  destination card and if the move is legal the cards will
-  stack below the target.
-
-## About the project.
-
-### Drag and Drop
-
-- Drag and drop is implemented with native html5 drag and drop api with @drag, @dragend, @dragenter eventlisteners on the Card.vue component.
-- Libraries like Vue.draggable were not used as i had to write most of the drag and drop logic according to the solitaire game type and I also had to **MOVE** the stack of cards.
-- Ghost image in drag is removed instead the **whole stack** of card moves with cursor change.
-
-### CSS
-
-- Each and every card is 100% css except the SVG of the suit in the center of the card,which is made by illustrator tool.
-
-  <p align="center"><img  src="./readme_assets/4.png" width="30%"></p>
-
-### 3 mode menu
-
-Choose from 3 variants of solitaire form the main menu
-
-<p align="center"><img  src="./readme_assets/menu.png" width="70%"></p>
-
-# Variants
-
-## **Klondike**
-
-<p align="center">
-<img  src="./readme_assets/3.png" width="80%">
-</p>
-<!-- <img src="./readme_assets/3.png" width="50%"> -->
-
-## **Spider 4 Suit**
-
-<p align="center">
-<img  src="./readme_assets/5.png" width="80%">
-</p>
-
-## **Spider 1 Suit**
-
-<p align="center">
-<img  src="./readme_assets/1.png" width="80%">
-</p>
-
-## Project setup
-
-```
-npm install
-npm run serve
-```
-
-## Future scope
-
-- Add winning animation.
-
-## Support on Beerpay
-
-Hey dude! Help me out for a couple of :beers:!
-
-[![Beerpay](https://beerpay.io/silent-lad/VueSolitaire/badge.svg?style=beer-square)](https://beerpay.io/silent-lad/VueSolitaire) [![Beerpay](https://beerpay.io/silent-lad/VueSolitaire/make-wish.svg?style=flat-square)](https://beerpay.io/silent-lad/VueSolitaire?focus=wish)
