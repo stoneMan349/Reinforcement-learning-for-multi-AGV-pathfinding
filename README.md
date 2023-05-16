@@ -132,7 +132,7 @@ Training a neural network to guide AGV. (RL algorithms will be discussed in next
 **3.4 RL mode**  
 Control AGV by a well-trained neural network.
 ```python
-    control_mode = 0
+    control_mode = 1
 ```
 
 **3.5 Expert mode**  
@@ -149,30 +149,53 @@ Import different packages to experience these algorithms, the control mode shoul
 from algorithm.PG_structure.Controller import PGAgentController as modelController
 # from src.algorithm.MADQN_structure.Controller import MADQNAgentController as modelController
 ```
+*Tips:You can check the logic of these algorithms online, so we won’t go into details here.*
 
 ## Details of RL algorithm
 ### 1.State
+1.1 We use three matrices to construct the State. Valid_Location_Matrix, Current_Location_Matrix and Target_Location_Matrix.  
+1.2 Valid_Location_Matrix describes which block (marked as 1) the AGV can access.  
+1.2 Current_Location_Matrix describes which block (marked as 1) is the AGV's current location.  
+1.3 Target_Location_Matrix describes which block (marked as 1) is the AGV's target location.  
+<p align="center">
+<img src="./ReadMe_Assets/fig7_state.png" width="70%"></p>
+
+[*Tips: It is unwise to create matrices the same size as the scene, especially as the scene gets bigger. We use Limited Visual to improve training performance.*](#LimitedVisual)
 ### 2.Action
 Action space includes five actions: up, right, down, left and stop. Each action corresponds to a number.  
-You can look them up in src.utils.utils.py
+You can look them up in src.utils.utils.py  
 ```python
 str_value = {"UP": 0, "RIGHT": 1, "DOWN": 2, "LEFT": 3, "STOP": 4}
 value_str = {0: "UP", 1: "RIGHT", 2: "DOWN", 3: "LEFT", 4: "STOP"}
 ```
+*Tips: If there is only one AGV, then action "stop" is unnecessary.*
 ### 3.Reward
 3.1 Corresponding to the result of performing an action, the agent can get three types of rewards: positive reward (reward value +1), negative reward (reward value -1) and normal reward (reward value 0).  
 3.2 When the AGV reaches the destination, it gets a positive reward; when the AGV hits an obstacle or runs out of the scene, it gets a negative reward; in other cases, the AGV gets a normal reward.  
-[*Tips: This is a typical sparse reward problem. We use Reward Reshaping to improve training performance.*](#3.Reward Reshaping)
+[*Tips: This is a typical sparse reward problem. We use Reward Reshaping to improve training performance.*](#RewardReshaping)
 ### 4.Convolutional Neural Network
+According to the formation of State, convolutional neural network is used.   
+<p align="center">
+<img src="./ReadMe_Assets/fig6_NN_structure.png" width="30%"></p>
 
 ## Other Technics
-
 ### 1.A* guiding DQN (AG-DQN)
+1.1 This is the most efficient method we have found to greatly improve the training effect of the DQN algorithm on AGV Pathfinding Problem.  
+1.2 The core change is to replace the random exploration used by the exploration method with the A* algorithm.  
+*Tips: We will put some figures of the training process later.*
 ### 2.Behavioral Cloning
+2.1 Behavioral Cloning is a specific method imitation learning.  
+2.2 Simply put, Behavioral Cloning is used to enhance the utilization of data, thereby increasing the training speed of neural networks. Because the neural network is initialized completely randomly, if we let the agent interact with the environment from the beginning, it will not accumulate useful experience and the neural network will be difficult to optimize. So we can use some expert experience to pre-train the neural network, and then let the agent interact with the environment to continue to optimize the neural network.  
+2.3 The A* algorithm is used as an expert for the pathfinding problem.  
+2.4 Behavioral Cloning performs well in PG and AC algorithms.  
 
-
+*Here are some pages where you can learn more about behavior cloning. But they are all in Chinese, you can search for more relevant English materials on the Internet.*  
+[Behavioral Cloning,](https://hrl.boyuai.com/chapter/3/%E6%A8%A1%E4%BB%BF%E5%AD%A6%E4%B9%A0) [Code](https://github.com/boyu-ai/Hands-on-RL/blob/main/%E7%AC%AC15%E7%AB%A0-%E6%A8%A1%E4%BB%BF%E5%AD%A6%E4%B9%A0.ipynb)  
+*Tips: We will put some figures of the training process later.*
+<span id="RewardReshaping"></span>
 ### 3.Reward Reshaping
 
+<span id="LimitedVisual"></span>
 ### 4.Limited Visual
 
 
