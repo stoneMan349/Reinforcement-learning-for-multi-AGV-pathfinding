@@ -1,6 +1,6 @@
 <h1 align="center">RL on Multi-AGV Collision-free Pathfinding</h1>
 <h2 align="center">
-
+This README is not finished yet. And some Exper_Data for training is too big to upload, you can collect them by yourself.
 </h2>
 
 <p align="center">
